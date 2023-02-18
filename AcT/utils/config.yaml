@@ -55,8 +55,7 @@ POS_EMB: # 'utils/pos_emb.npy'
 micro:        
     N_HEADS: 1
     N_LAYERS: 4
-    # EMBED_DIM: 64
-    EMBED_DIM: 96
+    EMBED_DIM: 64
     DROPOUT: 0.3
     MLP: 256
 small:    

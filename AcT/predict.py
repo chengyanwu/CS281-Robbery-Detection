@@ -32,6 +32,9 @@ d_model = 64 * n_heads
 d_ff = d_model * 4
 pos_emb = config['POS_EMB']
 
+print('Configuration: ')
+print(config)
+
 now = datetime.now()
 logger = Logger(config['LOG_DIR']+now.strftime("%y%m%d%H%M%S")+'.txt')
 
@@ -65,7 +68,7 @@ def build_act(transformer):
 
 transformer = TransformerEncoder(d_model, n_heads, d_ff, dropout, activation, n_layers)
 model = build_act(transformer)
-model.load_weights('AcT_pretrained_weights/AcT_base_1_0.h5')
+model.load_weights('AcT_pretrained_weights/AcT_micro_1_0.h5')
 # model = tf.keras.models.load_model('AcT_pretrained_weights/AcT_base_1_0.h5')
 
 print("---Model Summary-----")
