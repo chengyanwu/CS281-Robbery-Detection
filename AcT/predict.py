@@ -68,7 +68,8 @@ def build_act(transformer):
 
 transformer = TransformerEncoder(d_model, n_heads, d_ff, dropout, activation, n_layers)
 model = build_act(transformer)
-model.load_weights('AcT_pretrained_weights/AcT_micro_1_0.h5')
+# model.load_weights('AcT_pretrained_weights/AcT_micro_1_0.h5')
+model.load_weights('AcT_micro_2_3.h5')
 # model = tf.keras.models.load_model('AcT_pretrained_weights/AcT_base_1_0.h5')
 
 print("---Model Summary-----")
@@ -83,6 +84,8 @@ cap = cv2.VideoCapture(0)
 while True:
     # Read frame from camera
     ret, image_np = cap.read()
+    if image_np is None:
+        break
 
     # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
     image_np_expanded = np.expand_dims(image_np, axis=0)
