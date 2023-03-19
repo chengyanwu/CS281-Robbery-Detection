@@ -143,28 +143,28 @@ class Trainer:
                             # 1D vector : (272,)
                             keypoint_with_v = []
                             for j in range(68):
-                                if (j != 0):
-                                    keypoint_with_v.append(keypoint[2*j])
-                                    keypoint_with_v.append(keypoint[2*j+1])
-                                    keypoint_with_v.append(
-                                        keypoint[2*j]-keypoint[2*j-2])
-                                    keypoint_with_v.append(
-                                        keypoint[2*j+1]-keypoint[2*j-1])
-                                else:
-                                    keypoint_with_v.append(keypoint[2*j])
-                                    keypoint_with_v.append(keypoint[2*j+1])
-                                    keypoint_with_v.append(0)
-                                    keypoint_with_v.append(0)
+                                # if (j != 0):
+                                keypoint_with_v.append(keypoint[2*j])
+                                keypoint_with_v.append(keypoint[2*j+1])
+                                    # keypoint_with_v.append(
+                                    #     keypoint[2*j]-keypoint[2*j-2])
+                                    # keypoint_with_v.append(
+                                    #     keypoint[2*j+1]-keypoint[2*j-1])
+                                # else:
+                                #     keypoint_with_v.append(keypoint[2*j])
+                                #     keypoint_with_v.append(keypoint[2*j+1])
+                                #     keypoint_with_v.append(0)
+                                #     keypoint_with_v.append(0)
 
-                            #normalize
-                            tmp = np.asarray(keypoint_with_v).reshape(4,68)
+                            # #normalize
+                            # tmp = np.asarray(keypoint_with_v).reshape(2,68)
 
-                            v_rows = tmp
-                            # normalize the third and fourth rows using L2 normalization
-                            v_norm = preprocessing.normalize(v_rows, norm='l2', axis=0)
-                            # replace the third and fourth rows of the original array with the normalized values
-                            tmp = v_norm
-                            keypoint_with_v = np.reshape(tmp, (272,))
+                            # v_rows = tmp
+                            # # normalize the third and fourth rows using L2 normalization
+                            # v_norm = preprocessing.normalize(v_rows, norm='l2', axis=0)
+                            # # replace the third and fourth rows of the original array with the normalized values
+                            # tmp = v_norm
+                            # keypoint_with_v = np.reshape(tmp, (68*2,))
 
 
                             # keypoints will be appended 30 times
@@ -208,6 +208,7 @@ class Trainer:
             X_train = new_kp_seq[:train_size]
             X_val = new_kp_seq[train_size:train_val_size]
             X_test = new_kp_seq[train_val_size:135]
+            # 1 for steal
             y_train = [1 for _ in range(train_size)]
             y_val = [1 for _ in range(val_size)]
             y_test = [1 for _ in range(test_size)]
@@ -242,21 +243,21 @@ class Trainer:
                             # 1D vector : (272,)
                             keypoint_with_v = []
                             for j in range(68):
-                                if (j != 0):
-                                    keypoint_with_v.append(keypoint[2*j])
-                                    keypoint_with_v.append(keypoint[2*j+1])
-                                    keypoint_with_v.append(
-                                        keypoint[2*j]-keypoint[2*j-2])
-                                    keypoint_with_v.append(
-                                        keypoint[2*j+1]-keypoint[2*j-1])
-                                else:
-                                    keypoint_with_v.append(keypoint[2*j])
-                                    keypoint_with_v.append(keypoint[2*j+1])
-                                    keypoint_with_v.append(0)
-                                    keypoint_with_v.append(0)
+                                # if (j != 0):
+                                keypoint_with_v.append(keypoint[2*j])
+                                keypoint_with_v.append(keypoint[2*j+1])
+                                #     keypoint_with_v.append(
+                                #         keypoint[2*j]-keypoint[2*j-2])
+                                #     keypoint_with_v.append(
+                                #         keypoint[2*j+1]-keypoint[2*j-1])
+                                # else:
+                                #     keypoint_with_v.append(keypoint[2*j])
+                                #     keypoint_with_v.append(keypoint[2*j+1])
+                                #     keypoint_with_v.append(0)
+                                #     keypoint_with_v.append(0)
                             
                             #normalize
-                            tmp = np.asarray(keypoint_with_v).reshape(4, 68)
+                            tmp = np.asarray(keypoint_with_v).reshape(2, 68)
 
                             v_rows = tmp
                             # normalize the third and fourth rows using L2 normalization
@@ -264,16 +265,16 @@ class Trainer:
                                 v_rows, norm='l2', axis=0)
                             # replace the third and fourth rows of the original array with the normalized values
                             tmp = v_norm
-                            keypoint_with_v = np.reshape(tmp, (272,))
+                            keypoint_with_v = np.reshape(tmp, (68*2,))
 
                             # keypoints will be appended 30 times
-                            # keypoints: 2D vector (30, 272)
+                            # keypoints: 2D vector (30, 68*2)
                             keypoints.append(keypoint_with_v)
                             keypoint = []
                             break
 
                         if (len(keypoints) == 30):
-                            # we only be append (30,272) to kq_seq
+                            # we only be append (30,68*2) to kq_seq
                             kp_seq.append(keypoints)
                             keypoints = []
 
@@ -309,6 +310,7 @@ class Trainer:
             X_train.extend(new_kp_seq[old_n: old_n + new_train_size])
             X_val.extend(new_kp_seq[old_n + new_train_size : old_n + new_train_val_size])
             X_test.extend(new_kp_seq[old_n + new_train_val_size:])
+            # 0: non steal
             y_train.extend([0 for _ in range(new_train_size)])
             y_val.extend([0 for _ in range(new_val_size)])
             y_test.extend([0 for _ in range(new_test_size)])
