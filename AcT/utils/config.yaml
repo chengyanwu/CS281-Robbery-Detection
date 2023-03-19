@@ -15,7 +15,7 @@ SEEDS: [11331, 11435, 12123, 53453, 42344, 24234, 65747, 84443, 29345, 99543]
 VAL_SIZE: 0.1
 CHANNELS: 4
 SUBSAMPLE: 1
-DATASET: 'openpose_legacy'
+DATASET: 'homesecurity'
 LEGACY: False
 openpose:
     KEYPOINTS: 13
@@ -41,8 +41,13 @@ kinetics:
     KEYPOINTS: 18
     CLASSES: 400
     FRAMES: 300
-LABELS: ['standing','check-watch','cross-arms','scratch-head','sit-down','get-up','turn-around','walking','wave1','boxing',
-         'kicking','pointing','pick-up','bending','hands-clapping','wave2','jogging','jumping','pjump','running']
+homesecurity:
+    KEYPOINTS: 68
+    CLASSES: 2
+    FRAMES: 30
+# LABELS: ['standing','check-watch','cross-arms','scratch-head','sit-down','get-up','turn-around','walking','wave1','boxing',
+#          'kicking','pointing','pick-up','bending','hands-clapping','wave2','jogging','jumping','pjump','running']
+LABELS: ['steal', 'nonsteal']
 
 #---- AUGMENTATION
 FLIP_P: 0.5
@@ -79,8 +84,8 @@ large:
 
 #---- TRAINING SETTINGS 
 SCHEDULER: True
-N_EPOCHS: 350       
-BATCH_SIZE: 512
+N_EPOCHS: 150       
+BATCH_SIZE: 32
 WEIGHT_DECAY: 0.0001  
 WARMUP_PERC: 0.3  
 STEP_PERC: 0.8

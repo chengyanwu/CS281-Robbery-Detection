@@ -72,10 +72,8 @@ def load_kinetics(config, fold=0):
 
 
 def load_mpose(dataset, split, verbose=False, legacy=False):
-    
     if legacy:
         return load_dataset_legacy(data_folder=f'datasets/openpose_bm/split{split}/base_vars/')
-    
     d = MPOSE(pose_extractor=dataset, 
                     split=split, 
                     preprocess=None, 
@@ -94,7 +92,11 @@ def load_mpose(dataset, split, verbose=False, legacy=False):
         X_train, y_train, X_test, y_test = d.get_data()
         return X_train, transform_labels(y_train), X_test, transform_labels(y_test)
     else:
-        return d.get_data()
+        X_train, y_train, X_test, y_test = d.get_data()
+        X_train = X_train.reshape(X_train.shape[0], X_train.shape[1],  X_train.shape[2]* X_train.shape[3])
+        X_test = X_test.reshape(X_test.shape[0], X_test.shape[1],  X_test.shape[2]* X_test.shape[3])
+        # return d.get_data()
+        return X_train, y_train, X_test, y_test
         
 
 def random_flip(x, y):
@@ -107,7 +109,8 @@ def random_flip(x, y):
         if choice >= 0.5:
             x = tf.math.multiply(x, [-1.0,1.0])
     else:
-        x = tf.reshape(x, (time_steps, n_features//3, 3))
+        x = tf.reshape(x, (time_steps, n_features // 3, 3))
+        tf.shape(x)
 
         choice = tf.random.uniform(shape=[], minval=0., maxval=1., dtype=tf.float32)
         if choice >= 0.5:

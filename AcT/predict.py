@@ -1,5 +1,7 @@
 # GENERAL LIBRARIES
+import math
 import os
+import time
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import absl.logging
 absl.logging.set_verbosity(absl.logging.ERROR)
@@ -8,19 +10,29 @@ from datetime import datetime
 # MACHINE LEARNING LIBRARIES
 import numpy as np
 import tensorflow as tf
+
 # CUSTOM LIBRARIES
+
 from utils.tools import read_yaml, Logger
 from utils.trainer import Trainer
 from utils.transformer import TransformerEncoder, PatchClassEmbedding, Patches
 from utils.data import load_mpose, load_kinetics, random_flip, random_noise, one_hot
 from utils.tools import CustomSchedule, CosineSchedule
 from utils.tools import Logger
+import sys
+sys.path.append(os.path.abspath('../AcT'))
+# sys.path.append(os.path.abspath('../bin'))
 
 # Use OpenCV to capture webcam video stream
 import cv2
 
-    
-config = read_yaml('utils/config.yaml')
+# crime detection
+from typing import Any, Dict, List, Tuple
+from sklearn import preprocessing
+
+import json as json
+
+config = read_yaml('/home/homesecurity/CS281-Robbery-Detection/AcT/utils/config.yaml')
 model_size = config['MODEL_SIZE']
 n_heads = config[model_size]['N_HEADS']
 n_layers = config[model_size]['N_LAYERS']
@@ -32,8 +44,8 @@ d_model = 64 * n_heads
 d_ff = d_model * 4
 pos_emb = config['POS_EMB']
 
-print('Configuration: ')
-print(config)
+# print('Configuration: ')
+# print(config)
 
 now = datetime.now()
 logger = Logger(config['LOG_DIR']+now.strftime("%y%m%d%H%M%S")+'.txt')
@@ -65,49 +77,148 @@ def build_act(transformer):
 # trainer = Trainer(config, logger)
 # trainer.get_model()
 # model = trainer.return_model()
+file_path = sys.argv[1]
+print(f'filepath: {file_path}')
 
 transformer = TransformerEncoder(d_model, n_heads, d_ff, dropout, activation, n_layers)
 model = build_act(transformer)
-# model.load_weights('AcT_pretrained_weights/AcT_micro_1_0.h5')
-model.load_weights('AcT_micro_2_3.h5')
+model.load_weights('/home/homesecurity/CS281-Robbery-Detection/AcT/bin/AcT_micro_3_9.h5')
 # model = tf.keras.models.load_model('AcT_pretrained_weights/AcT_base_1_0.h5')
 
 print("---Model Summary-----")
 
 model.summary()
-# print(model.trainable_variables) 
+# print(model.trainable_variables)
 
 print("-----------------------")
 # model = trainer.model
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
 
-while True:
-    # Read frame from camera
-    ret, image_np = cap.read()
-    if image_np is None:
-        break
+print('-------Loading Keypoints----')
+kp_seq: List[List[List[float]]] = []
 
-    # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
-    image_np_expanded = np.expand_dims(image_np, axis=0)
+# steal
+with open(file_path, "r") as f:
+    data: List[Dict[str, Any]] = json.load(f)
 
-    # Things to try:
-    # Flip horizontally
-    # image_np = np.fliplr(image_np).copy()
+# keypoint/s are intiazlied per file
+keypoints: List[List[float]] = []
+keypoint: List[float] = []
 
-    # Convert image to grayscale
-    # image_np = np.tile(
-    #     np.mean(image_np, 2, keepdims=True), (1, 1, 3)).astype(np.uint8)
+for d in data:
+    for i, kp in enumerate(d["keypoints"]):
+        if (i + 1) % 3 != 0:
+            keypoint.append(kp)
 
-    input_tensor = tf.convert_to_tensor(np.expand_dims(image_np, 0), dtype=tf.float32)
+        if (len(keypoint) == 136):
+            # 1D vector : (272,)
+            keypoint_with_v = []
+            for j in range(68):
+                if (j != 0):
+                    keypoint_with_v.append(keypoint[2*j])
+                    keypoint_with_v.append(keypoint[2*j+1])
+                    keypoint_with_v.append(
+                        keypoint[2*j]-keypoint[2*j-2])
+                    keypoint_with_v.append(
+                        keypoint[2*j+1]-keypoint[2*j-1])
+                else:
+                    keypoint_with_v.append(keypoint[2*j])
+                    keypoint_with_v.append(keypoint[2*j+1])
+                    keypoint_with_v.append(0)
+                    keypoint_with_v.append(0)
 
-    label_id_offset = 1
-    image_np_with_detections = image_np.copy()
+            #normalize
+            tmp = np.asarray(keypoint_with_v).reshape(4,68)
 
-    # Display output
-    cv2.imshow('object detection', cv2.resize(image_np_with_detections, (800, 600)))
+            v_rows = tmp
+            # normalize the third and fourth rows using L2 normalization
+            v_norm = preprocessing.normalize(v_rows, norm='l2', axis=0)
+            # replace the third and fourth rows of the original array with the normalized values
+            tmp = v_norm
+            keypoint_with_v = np.reshape(tmp, (272,))
 
-    if cv2.waitKey(25) & 0xFF == ord('q'):
-        break
 
-cap.release()
-cv2.destroyAllWindows()
+            # keypoints will be appended 30 times
+            # keypoints: 2D vector (30, 272)
+            keypoints.append(keypoint_with_v)
+            keypoint = []
+            break
+
+        if (len(keypoints) == 30):
+            # we only be append (30,272) to kq_seq
+            kp_seq.append(keypoints)
+            keypoints = []
+ 
+n: int= len(kp_seq)
+
+new_kp_seq: List[List[List[float]]] = [[]]
+extended_kp_seq: List[List[float]] = kp_seq[0]
+for i in range(1, n):
+    extended_kp_seq.extend(kp_seq[i])
+# append the rest of keypoints that haven't been appended to kp_seq
+# size of keypoints must < 36
+extended_kp_seq.extend(keypoints)
+
+print(f'extended kp_seq size: {np.asarray(extended_kp_seq).shape}')
+
+total_number_of_frames: int = len(extended_kp_seq)
+print("total_number_of_frames: ", total_number_of_frames)
+
+multiplier: float = total_number_of_frames / 30
+for i in range(30):
+    idx = int(i * multiplier)
+    new_kp_seq[0].append(extended_kp_seq[int(idx)])
+
+print(f'new kp_seq size: {np.asarray(new_kp_seq).shape}')
+
+
+# print('input size: ', len(kp_seq))
+# print('inner input size 1: ', len(kp_seq[0]))
+# print('inner input size 2: ', len(kp_seq[0][0]))
+
+# model.eval()
+# print(model.predict(np.asarray(new_kp_seq)))
+start_time = time.time()
+print(np.argmax(tf.nn.softmax(model.predict(np.asarray(new_kp_seq)), axis=-1), axis=1))
+end_time = time.time()
+
+print(f"inference time: {end_time-start_time} s.")
+
+print('-----------------')
+
+
+
+
+
+
+
+# while True:
+#     # Read frame from camera
+#     ret, image_np = cap.read()
+#     if image_np is None:
+#         break
+
+#     # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
+#     image_np_expanded = np.expand_dims(image_np, axis=0)
+
+#     # Things to try:
+#     # Flip horizontally
+#     # image_np = np.fliplr(image_np).copy()
+
+#     # Convert image to grayscale
+#     # image_np = np.tile(
+#     #     np.mean(image_np, 2, keepdims=True), (1, 1, 3)).astype(np.uint8)
+
+#     input_tensor = tf.convert_to_tensor(np.expand_dims(image_np, 0), dtype=tf.float32)
+
+#     label_id_offset = 1
+#     image_np_with_detections = image_np.copy()
+
+#     # Display output
+#     cv2.imshow('object detection', cv2.resize(image_np_with_detections, (800, 600)))
+
+#     if cv2.waitKey(25) & 0xFF == ord('q'):
+#         break
+
+# cap.release()
+# cv2.destroyAllWindows()
