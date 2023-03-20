@@ -82,7 +82,7 @@ print(f'filepath: {file_path}')
 
 transformer = TransformerEncoder(d_model, n_heads, d_ff, dropout, activation, n_layers)
 model = build_act(transformer)
-model.load_weights('/home/homesecurity/CS281-Robbery-Detection/AcT/bin/AcT_micro_3_9.h5')
+model.load_weights('/home/homesecurity/CS281-Robbery-Detection/AcT/bin/AcT_micro_1_0.h5')
 # model = tf.keras.models.load_model('AcT_pretrained_weights/AcT_base_1_0.h5')
 
 print("---Model Summary-----")
@@ -97,7 +97,6 @@ print("-----------------------")
 print('-------Loading Keypoints----')
 kp_seq: List[List[List[float]]] = []
 
-# steal
 with open(file_path, "r") as f:
     data: List[Dict[str, Any]] = json.load(f)
 
@@ -114,29 +113,8 @@ for d in data:
             # 1D vector : (272,)
             keypoint_with_v = []
             for j in range(68):
-                if (j != 0):
-                    keypoint_with_v.append(keypoint[2*j])
-                    keypoint_with_v.append(keypoint[2*j+1])
-                    keypoint_with_v.append(
-                        keypoint[2*j]-keypoint[2*j-2])
-                    keypoint_with_v.append(
-                        keypoint[2*j+1]-keypoint[2*j-1])
-                else:
-                    keypoint_with_v.append(keypoint[2*j])
-                    keypoint_with_v.append(keypoint[2*j+1])
-                    keypoint_with_v.append(0)
-                    keypoint_with_v.append(0)
-
-            #normalize
-            tmp = np.asarray(keypoint_with_v).reshape(4,68)
-
-            v_rows = tmp
-            # normalize the third and fourth rows using L2 normalization
-            v_norm = preprocessing.normalize(v_rows, norm='l2', axis=0)
-            # replace the third and fourth rows of the original array with the normalized values
-            tmp = v_norm
-            keypoint_with_v = np.reshape(tmp, (272,))
-
+                keypoint_with_v.append(keypoint[2*j])
+                keypoint_with_v.append(keypoint[2*j+1])
 
             # keypoints will be appended 30 times
             # keypoints: 2D vector (30, 272)
