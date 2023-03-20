@@ -256,16 +256,16 @@ class Trainer:
                                 #     keypoint_with_v.append(0)
                                 #     keypoint_with_v.append(0)
                             
-                            #normalize
-                            tmp = np.asarray(keypoint_with_v).reshape(2, 68)
+                            # #normalize
+                            # tmp = np.asarray(keypoint_with_v).reshape(2, 68)
 
-                            v_rows = tmp
-                            # normalize the third and fourth rows using L2 normalization
-                            v_norm = preprocessing.normalize(
-                                v_rows, norm='l2', axis=0)
-                            # replace the third and fourth rows of the original array with the normalized values
-                            tmp = v_norm
-                            keypoint_with_v = np.reshape(tmp, (68*2,))
+                            # v_rows = tmp
+                            # # normalize the third and fourth rows using L2 normalization
+                            # v_norm = preprocessing.normalize(
+                            #     v_rows, norm='l2', axis=0)
+                            # # replace the third and fourth rows of the original array with the normalized values
+                            # tmp = v_norm
+                            # keypoint_with_v = np.reshape(tmp, (68*2,))
 
                             # keypoints will be appended 30 times
                             # keypoints: 2D vector (30, 68*2)

@@ -1,5 +1,18 @@
+# large files from legacy
 AcT/tmp/
 PoseFormer/
 openpose/
 pytorch-cpn/
+
+# large videos to ignore
 AlphaPose/examples/theft_data2/
+
+# python byte files
+__pycache__/
+AcT/__pycache__/
+AcT/utils/__pycache__/
+AlphaPose/detector/__pycache__/
+AlphaPose/trackers/__pycache__/
+
+# macOS icons
+.DS_Store/
