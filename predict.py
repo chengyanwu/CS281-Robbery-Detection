@@ -9,11 +9,13 @@ from datetime import datetime
 from typing import Any, Dict, List, Tuple
 import sys
 import json as json
+from tqdm import tqdm
 
 # MACHINE LEARNING LIBRARIES
 import numpy as np
 import tensorflow as tf
 from sklearn import preprocessing
+import torch
 
 # AcT LIBRARIES
 from AcT.utils.tools import read_yaml, Logger
@@ -55,6 +57,9 @@ parser.add_argument('--AcT_CKPT', type=str, required=True,
 parser.add_argument('--video', dest='video',
                     help='video-name', default="")
 
+parser.add_argument('--qsize', type=int, dest='qsize', default=1024,
+                    help='the length of result buffer, where reducing it will lower requirement of cpu memory')
+
 args = parser.parse_args()
 
 # Reading AlphaPose Configuration
@@ -75,7 +80,6 @@ pos_emb = AcT_cfg['POS_EMB']
 
 # print('Configuration: ')
 # print(config)
-
 
 # Helper Functions
 def build_act():
@@ -110,23 +114,32 @@ def load_AP_Detector():
             input_source = videofile
         else:
             raise IOError('Error: --video must refer to a video file, not directory.')
-        
+
     # TODO: 1. alphapose FileDetectionLoader to read video file and run yolo
     #       2. load alphapose pose model
     if mode == 'video':
+        # get_detector loads Yolo
         det_loader = DetectionLoader(input_source, get_detector(args), AP_cfg, args, batchSize=args.detbatch, mode=mode, queueSize=args.qsize)
         det_worker = det_loader.start()
     
     # Load Pose Model
-    pose_model = builder.build_sppe()
+    pose_model = builder.build_sppe(AP_cfg.MODEL, preset_cfg=AP_cfg.DATA_PRESET)
+    print('Loading pose model from %s...' % (args.AP_CKPT,))
+    pose_model.load_state_dict(torch.load(args.AP_CKPT, map_location=args.device))
+    pose_dataset = builder.retrieve_dataset(AP_cfg.DATASET.TRAIN)
+    # load pose model to gpu
+    pose_model = torch.nn.DataParallel(pose_model, device_ids=args.gpus).to(args.device)
+    pose_model.eval()
 
+    data_len = det_loader.length
+    im_names_desc = tqdm(range(data_len), dynamic_ncols=True)
 
 # set up GPU
 set_GPU()
 
 # Built Pose Estimation Model From AlphaPose
 load_AP_Detector()
-    
+
 # Built AcT
 AcT_model = build_act()
 AcT_model.load_weights(args.AcT_CKPT)

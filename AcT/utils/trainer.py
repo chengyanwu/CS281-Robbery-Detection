@@ -143,18 +143,8 @@ class Trainer:
                             # 1D vector : (272,)
                             keypoint_with_v = []
                             for j in range(68):
-                                # if (j != 0):
                                 keypoint_with_v.append(keypoint[2*j])
                                 keypoint_with_v.append(keypoint[2*j+1])
-                                    # keypoint_with_v.append(
-                                    #     keypoint[2*j]-keypoint[2*j-2])
-                                    # keypoint_with_v.append(
-                                    #     keypoint[2*j+1]-keypoint[2*j-1])
-                                # else:
-                                #     keypoint_with_v.append(keypoint[2*j])
-                                #     keypoint_with_v.append(keypoint[2*j+1])
-                                #     keypoint_with_v.append(0)
-                                #     keypoint_with_v.append(0)
 
                             # #normalize
                             # tmp = np.asarray(keypoint_with_v).reshape(2,68)
@@ -198,30 +188,8 @@ class Trainer:
             old_n = total_number_of_steals
             print('old input size: ', old_n)
 
-            # 80% for training and validation
-            # 20% for testing
-            train_val_size = math.floor(old_n * 0.8)
-            train_size = math.floor(train_val_size * 0.8)
-            val_size = train_val_size - train_size
-            test_size = old_n - train_val_size
-
-            X_train = new_kp_seq[:train_size]
-            X_val = new_kp_seq[train_size:train_val_size]
-            X_test = new_kp_seq[train_val_size:135]
             # 1 for steal
-            y_train = [1 for _ in range(train_size)]
-            y_val = [1 for _ in range(val_size)]
-            y_test = [1 for _ in range(test_size)]
-
-            print(f'size of x_test: {len(X_test)}')
-            print(f'size of y_test: {len(X_test)}')
-
-            assert len(X_train) == len(
-                y_train), "x and y should have the same size"
-            assert len(X_val) == len(
-                y_val), "x and y should have the same size"
-            assert len(X_test) == len(
-                y_test), "x and y should have the same size"
+            y = [1 for _ in range(old_n)]
 
             # non steal
             for k in range(1, 104):
@@ -243,18 +211,8 @@ class Trainer:
                             # 1D vector : (272,)
                             keypoint_with_v = []
                             for j in range(68):
-                                # if (j != 0):
                                 keypoint_with_v.append(keypoint[2*j])
                                 keypoint_with_v.append(keypoint[2*j+1])
-                                #     keypoint_with_v.append(
-                                #         keypoint[2*j]-keypoint[2*j-2])
-                                #     keypoint_with_v.append(
-                                #         keypoint[2*j+1]-keypoint[2*j-1])
-                                # else:
-                                #     keypoint_with_v.append(keypoint[2*j])
-                                #     keypoint_with_v.append(keypoint[2*j+1])
-                                #     keypoint_with_v.append(0)
-                                #     keypoint_with_v.append(0)
                             
                             # #normalize
                             # tmp = np.asarray(keypoint_with_v).reshape(2, 68)
@@ -300,30 +258,24 @@ class Trainer:
             print('Diff input size: ', new_n)
 
             assert new_n == 103, "new_n + old_n should be equal to total_n"
+            
+            X = new_kp_seq
+            y.extend([0 for _ in range(new_n)])
 
-            # new for non-steal
-            new_train_val_size = math.floor(new_n * 0.8)
-            new_train_size = math.floor(new_train_val_size * 0.8)
-            new_val_size = new_train_val_size - new_train_size
-            new_test_size = new_n - new_train_val_size
+            # train test split
+            X_train_val, X_test, y_train_val, y_test = train_test_split(X, y,
+                                                              test_size=self.config['VAL_SIZE'],
+                                                              random_state=self.config['SEEDS'][self.fold],
+                                                              stratify=y)
 
-            X_train.extend(new_kp_seq[old_n: old_n + new_train_size])
-            X_val.extend(new_kp_seq[old_n + new_train_size : old_n + new_train_val_size])
-            X_test.extend(new_kp_seq[old_n + new_train_val_size:])
-            # 0: non steal
-            y_train.extend([0 for _ in range(new_train_size)])
-            y_val.extend([0 for _ in range(new_val_size)])
-            y_test.extend([0 for _ in range(new_test_size)])
-
-            assert len(X_train) == len(
-                y_train), "x and y should have the same size"
-            assert len(X_val) == len(
-                y_val), "x and y should have the same size"
-            assert len(X_test) == len(
-                y_test), "x and y should have the same size"
-
-            self.train_len = len(y_train)
+            self.train_len = len(y_train_val)
             self.test_len = len(y_test)
+
+            # train val split
+            X_train, X_val, y_train, y_val = train_test_split(X_train_val, y_train_val,
+                                                              test_size=self.config['VAL_SIZE'],
+                                                              random_state=self.config['SEEDS'][self.fold],
+                                                              stratify=y_train_val)
 
             X_train = np.asarray(X_train)
             X_test = np.asarray(X_test)
@@ -332,20 +284,6 @@ class Trainer:
             y_train = np.asarray(y_train).astype(int)
             y_val = np.asarray(y_val).astype(int)
             y_test = np.asarray(y_test).astype(int)
-
-            # print(f'X_train shape: {X_train.shape}')
-
-            # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
-            #                                                   test_size=self.config['VAL_SIZE'],
-            #                                                   random_state=self.config['SEEDS'][self.fold],
-            #                                                   stratify=y_train)
-            # print()
-            # print()
-            # # print(f'data: {data.shape}')
-            # print(f'X_train: {X_train[0].shape}')
-            # print(f'kp_seq: {len(kp_seq)}')
-            # print()
-            # print()
 
             self.ds_train = tf.data.Dataset.from_tensor_slices(
                 (X_train, y_train))
@@ -453,7 +391,9 @@ class Trainer:
 
     def do_benchmark(self):
         for split in range(1, self.config['SPLITS']+1):
-            self.logger.save_log(f"----- Start Split {split} ----\n")
+            self.logger.save_log(f"----- Start Split {split} ----")
+            self.logger.save_log(f"# of epochs {self.config['N_EPOCHS']} ----\n")
+
             self.split = split
 
             acc_list = []

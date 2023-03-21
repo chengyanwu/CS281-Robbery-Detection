@@ -82,7 +82,7 @@ print(f'filepath: {file_path}')
 
 transformer = TransformerEncoder(d_model, n_heads, d_ff, dropout, activation, n_layers)
 model = build_act(transformer)
-model.load_weights('/home/homesecurity/CS281-Robbery-Detection/AcT/bin/AcT_micro_1_0.h5')
+model.load_weights('/home/homesecurity/CS281-Robbery-Detection/AcT/bin/AcT_micro_1_1.h5')
 # model = tf.keras.models.load_model('AcT_pretrained_weights/AcT_base_1_0.h5')
 
 print("---Model Summary-----")
@@ -156,9 +156,9 @@ print(f'new kp_seq size: {np.asarray(new_kp_seq).shape}')
 
 # model.eval()
 # print(model.predict(np.asarray(new_kp_seq)))
-start_time = time.time()
+start_time = time.monotonic()
 print(np.argmax(tf.nn.softmax(model.predict(np.asarray(new_kp_seq)), axis=-1), axis=1))
-end_time = time.time()
+end_time = time.monotonic()
 
 print(f"inference time: {end_time-start_time} s.")
 

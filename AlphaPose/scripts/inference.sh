@@ -5,7 +5,7 @@ CKPT=pretrained_models/noface_fast50_dcn_combined_256x192.pth
 OUTDIR=${4:-"./examples/res"}
 # examples/theft_data2/non-steal/*
 
-for file in examples/theft_data2/non-steal/*
+for file in examples/theft_data2/steal/*
 do
   echo "$file"
   filename=$(basename -- "$file")
