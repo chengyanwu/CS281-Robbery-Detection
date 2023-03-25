@@ -1,0 +1,18 @@
+----- Start Split 1 ----
+
+- Fold 1
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 2
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 3
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 4
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 5
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 6

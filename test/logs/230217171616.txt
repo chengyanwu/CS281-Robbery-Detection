@@ -1,0 +1,40 @@
+----- Start Split 1 ----
+
+- Fold 1
+Accuracy Test: 0.9121032357215881 <> Balanced Accuracy: 0.8781054351943212
+
+- Fold 2
+Accuracy Test: 0.9100104570388794 <> Balanced Accuracy: 0.873473272754395
+
+- Fold 3
+Accuracy Test: 0.9100104570388794 <> Balanced Accuracy: 0.8690218904179708
+
+- Fold 4
+Accuracy Test: 0.9096616506576538 <> Balanced Accuracy: 0.8755004318463551
+
+- Fold 5
+Accuracy Test: 0.9072200655937195 <> Balanced Accuracy: 0.867930123990775
+
+- Fold 6
+Accuracy Test: 0.9075688719749451 <> Balanced Accuracy: 0.8612236065826503
+
+- Fold 7
+Accuracy Test: 0.9051272869110107 <> Balanced Accuracy: 0.8652641162421355
+
+- Fold 8
+Accuracy Test: 0.9068713188171387 <> Balanced Accuracy: 0.8672243142457885
+
+- Fold 9
+Accuracy Test: 0.9075688719749451 <> Balanced Accuracy: 0.8619450557752566
+
+- Fold 10
+Accuracy Test: 0.9058248996734619 <> Balanced Accuracy: 0.8581130097542445
+
+---- Split 1 ----
+Accuracy mean: 0.9081967115402222
+Accuracy std: 0.0020623300067052572
+Balanced Accuracy mean: 0.8677801256803892
+Balanced Accuracy std: 0.006142636976642513
+----- Start Split 2 ----
+
+- Fold 1

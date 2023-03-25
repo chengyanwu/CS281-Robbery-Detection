@@ -15,7 +15,7 @@ do
   if timeout 300s python scripts/demo_inference.py \
     --cfg ${CONFIG} \
     --checkpoint ${CKPT} \
-    --outdir "${OUTDIR}" \
+    --outdir ${OUTDIR} \
     --detector "yolo"  \
     --debug \
     --video "$file"

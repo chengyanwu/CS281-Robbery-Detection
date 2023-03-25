@@ -1,0 +1,4 @@
+----- Start Split 1 ----
+# of epochs 100 ----
+
+- Fold 1

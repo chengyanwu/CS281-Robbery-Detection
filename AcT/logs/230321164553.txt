@@ -1,0 +1,46 @@
+----- Start Split 1 ----
+# of epochs 100 ----
+
+- Fold 1
+Accuracy Test: 0.7083333134651184 <> Balanced Accuracy: 0.7214285714285715
+
+- Fold 2
+Accuracy Test: 0.5833333134651184 <> Balanced Accuracy: 0.5
+
+- Fold 3
+Accuracy Test: 0.8333333134651184 <> Balanced Accuracy: 0.8
+
+- Fold 4
+Accuracy Test: 0.625 <> Balanced Accuracy: 0.6785714285714286
+
+- Fold 5
+Accuracy Test: 0.6666666865348816 <> Balanced Accuracy: 0.6714285714285715
+
+---- Split 1 ----
+Accuracy mean: 0.6833333253860474
+Accuracy std: 0.08579691359606212
+Balanced Accuracy mean: 0.6742857142857144
+Balanced Accuracy std: 0.09841602656942766
+----- Start Split 2 ----
+# of epochs 100 ----
+
+- Fold 1
+Accuracy Test: 0.5833333134651184 <> Balanced Accuracy: 0.5571428571428572
+
+- Fold 2
+Accuracy Test: 0.6666666865348816 <> Balanced Accuracy: 0.6142857142857143
+
+- Fold 3
+Accuracy Test: 0.7083333134651184 <> Balanced Accuracy: 0.6785714285714286
+
+- Fold 4
+Accuracy Test: 0.625 <> Balanced Accuracy: 0.5642857142857143
+
+- Fold 5
+Accuracy Test: 0.6666666865348816 <> Balanced Accuracy: 0.6142857142857143
+
+---- Split 2 ----
+Accuracy mean: 0.65
+Accuracy std: 0.04249183317642093
+Balanced Accuracy mean: 0.6057142857142858
+Balanced Accuracy std: 0.04365916225696037

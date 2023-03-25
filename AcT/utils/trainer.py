@@ -115,9 +115,24 @@ class Trainer:
 
             # kp_seq is initialized before we read any files
             # kp_seq: List[List[List[float]]] = []
-            
-            total_number_of_steals = 136 - 1
-            total_number_of_non_steals = 104 - 1
+
+            total_number_of_steals = 135
+            total_number_of_non_steals = 103
+
+            # # List all the directories in the given path
+            # with os.scandir('/home/homesecurity/CS281-Robbery-Detection/AlphaPose/examples/res/') as entries:
+            #     for entry in entries:
+            #         if entry.is_dir():
+            #             # Check if the directory is empty
+            #             if not os.listdir(entry.path):
+            #                 continue
+
+            #             # Check if the directory name starts with "steal" or "nonsteal" and update the respective count
+            #             if entry.name.startswith('steal'):
+            #                 total_number_of_steals += 1
+            #             elif entry.name.startswith('nonsteal'):
+            #                 total_number_of_non_steals += 1
+                            
             total_number_of_videos = total_number_of_non_steals + total_number_of_steals
 
             new_kp_seq: List[List[List[float]]] = [[]
@@ -393,6 +408,8 @@ class Trainer:
         for split in range(1, self.config['SPLITS']+1):
             self.logger.save_log(f"----- Start Split {split} ----")
             self.logger.save_log(f"# of epochs {self.config['N_EPOCHS']} ----\n")
+            self.logger.save_log(
+                f"model type {self.config['MODEL_SIZE']} ----\n")
 
             self.split = split
 

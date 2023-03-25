@@ -1,4 +1,5 @@
 # GENERAL LIBRARIES
+import socket
 import math
 import os
 import time
@@ -82,7 +83,7 @@ print(f'filepath: {file_path}')
 
 transformer = TransformerEncoder(d_model, n_heads, d_ff, dropout, activation, n_layers)
 model = build_act(transformer)
-model.load_weights('/home/homesecurity/CS281-Robbery-Detection/AcT/bin/AcT_micro_1_1.h5')
+model.load_weights('/home/homesecurity/CS281-Robbery-Detection/AcT/bin/AcT_large_1_2.h5')
 # model = tf.keras.models.load_model('AcT_pretrained_weights/AcT_base_1_0.h5')
 
 print("---Model Summary-----")
@@ -94,7 +95,7 @@ print("-----------------------")
 # model = trainer.model
 # cap = cv2.VideoCapture(0)
 
-print('-------Loading Keypoints----')
+# print('-------Loading Keypoints----')
 kp_seq: List[List[List[float]]] = []
 
 with open(file_path, "r") as f:
@@ -137,17 +138,17 @@ for i in range(1, n):
 # size of keypoints must < 36
 extended_kp_seq.extend(keypoints)
 
-print(f'extended kp_seq size: {np.asarray(extended_kp_seq).shape}')
+# print(f'extended kp_seq size: {np.asarray(extended_kp_seq).shape}')
 
 total_number_of_frames: int = len(extended_kp_seq)
-print("total_number_of_frames: ", total_number_of_frames)
+# print("total_number_of_frames: ", total_number_of_frames)
 
 multiplier: float = total_number_of_frames / 30
 for i in range(30):
     idx = int(i * multiplier)
     new_kp_seq[0].append(extended_kp_seq[int(idx)])
 
-print(f'new kp_seq size: {np.asarray(new_kp_seq).shape}')
+# print(f'new kp_seq size: {np.asarray(new_kp_seq).shape}')
 
 
 # print('input size: ', len(kp_seq))
@@ -156,9 +157,56 @@ print(f'new kp_seq size: {np.asarray(new_kp_seq).shape}')
 
 # model.eval()
 # print(model.predict(np.asarray(new_kp_seq)))
-start_time = time.monotonic()
-print(np.argmax(tf.nn.softmax(model.predict(np.asarray(new_kp_seq)), axis=-1), axis=1))
-end_time = time.monotonic()
+# start_time = time.monotonic()
+
+# with torch.no_grad
+# print(np.argmax(tf.nn.softmax(model.predict(np.asarray(new_kp_seq)), axis=-1), axis=1))
+# end_time = time.monotonic()
+# end_time = time.perf_counter()
+
+# print(model.predict(np.asarray(new_kp_seq)))
+# print(np.argmax(tf.nn.softmax(model.predict(np.asarray(new_kp_seq)), axis=-1), axis=1) )
+
+
+
+
+# HOST = '127.0.0.1'  # The remote host (in this case, the same machine)
+# PORT = 5000        # The same port as used by the server
+
+# # Define the variable you want to send
+# # for demo
+# steal_result = np.argmax(tf.nn.softmax(model.predict(np.asarray(new_kp_seq)), axis=-1), axis=1)[0]
+# print('ZM steal result', steal_result)
+
+# # Create a socket object
+# sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# # Connect the socket to the port where the receiver is listening
+# sock.connect((HOST, PORT))
+
+# # Convert the variable to a string and send it over the socket
+# sock.sendall(str(steal_result).encode())
+
+# # Close the socket
+# sock.close()
+
+start_time = time.perf_counter()
+if np.argmax(tf.nn.softmax(model.predict(np.asarray(new_kp_seq)), axis=-1), axis=1) == 0:
+    
+    with open("result.txt", "w") as f:
+    # Write the variable to the file
+        f.write('0')
+    
+    end_time = time.perf_counter()
+
+    print("Action: Normal")
+else:
+    with open("result.txt", "w") as f:
+    # Write the variable to the file
+        f.write('1')
+    
+    end_time = time.perf_counter()
+    print("Action: Steal")
 
 print(f"inference time: {end_time-start_time} s.")
 

@@ -1,0 +1,6 @@
+----- Start Split 1 ----
+# of epochs 100 ----
+
+model type large ----
+
+- Fold 1

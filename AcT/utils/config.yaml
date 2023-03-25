@@ -55,7 +55,7 @@ RN_STD: 0.03
 
 #---- MODEL
 #PATCH_SIZE: 1
-MODEL_SIZE: 'micro'
+MODEL_SIZE: 'large'
 POS_EMB: # 'utils/pos_emb.npy'
 micro:        
     N_HEADS: 1
@@ -81,10 +81,23 @@ large:
     EMBED_DIM: 256
     DROPOUT: 0.4
     MLP: 512
+Xlarge:
+    N_HEADS: 5
+    N_LAYERS: 7
+    EMBED_DIM: 512
+    DROPOUT: 0.4
+    MLP: 1024
+XXlarge:
+    N_HEADS: 6
+    N_LAYERS: 8
+    EMBED_DIM: 1024
+    DROPOUT: 0.4
+    MLP: 1024
+
 
 #---- TRAINING SETTINGS 
 SCHEDULER: True
-N_EPOCHS: 200      
+N_EPOCHS: 100      
 BATCH_SIZE: 8
 WEIGHT_DECAY: 0.0001  
 WARMUP_PERC: 0.3  

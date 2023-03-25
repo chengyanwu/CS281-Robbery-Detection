@@ -1,0 +1,13 @@
+----- Start Split 1 ----
+# of epochs 100 ----
+
+- Fold 1
+Accuracy Test: 0.5833333134651184 <> Balanced Accuracy: 0.5
+
+- Fold 2
+Accuracy Test: 0.6666666865348816 <> Balanced Accuracy: 0.6714285714285715
+
+- Fold 3
+Accuracy Test: 0.5833333134651184 <> Balanced Accuracy: 0.5
+
+- Fold 4

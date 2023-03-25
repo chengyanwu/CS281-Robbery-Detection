@@ -6,6 +6,11 @@ pytorch-cpn/
 
 # large videos to ignore
 AlphaPose/examples/theft_data2/
+test/examples/theft_da/
+test/examples/theft_data3/
+test/pretrained_models/noface_fast50_dcn_combined_256x192.pth
+test/example/res/
+test/examples/theft_data2/
 
 # python byte files
 __pycache__/
@@ -15,4 +20,37 @@ AlphaPose/detector/__pycache__/
 AlphaPose/trackers/__pycache__/
 
 # macOS icons
-.DS_Store/
+.DS_Store/./.git/objects/f2/4628efeb45c82be8d63951af7becd8db766da6
+./.git/objects/53/33da070b96f73743ba291467aacfb6eee19f46
+./.git/objects/e3/1856bfd3258fc8402c12863e5c3219fbded778
+./.git/objects/75/9131b9d4732aea153ab454680a532d9d66790c
+./.git/objects/5a/43507986a88473d8133cbf50c317ca46134677
+./.git/objects/eb/4962ee6227fceeca1fd35043fa5b6a3cbe38d0
+./.git/objects/36/a475c66219b27927435d0eb464077226e6222f
+./.git/objects/36/tmp_obj_g7JHlx
+./.git/objects/fb/c750856eea99414d441dc23ddf94832cb8c1c7
+./.git/objects/ae/de85f406b63c98b3fd36d38876c223ed0ec722
+./.git/objects/3c/6262e6807838332904949ee956cebd0a8ffad0
+./.git/objects/1c/60a12c93d023b5f0a53e210eb451382f22b67a
+./.git/objects/6b/355ef3b1d1a1afdec63b2c6442a12bf832a5ee
+./.git/objects/e4/daf459fa22ff54475cbae1fb91eb8170e5831b
+./test/pretrained_models/halpe136_fast50_dcn_combined_256x192_10handweight.pth
+./test/pretrained_models/fast_421_res152_256x192.pth
+./test/pretrained_models/noface_fast50_dcn_combined_256x192.pth
+./test/detector/yolo/data/yolov3-spp.weights
+./AcT/tmp/posenet_legacy.zip
+./AcT/tmp/openpose_legacy.zip
+./AcT/tmp/posenet_legacy/2/X_train.npy
+./AcT/tmp/posenet_legacy/3/X_train.npy
+./AcT/tmp/posenet_legacy/1/X_train.npy
+./AcT/tmp/openpose_legacy/2/X_train.npy
+./AcT/tmp/openpose_legacy/3/X_train.npy
+./AcT/tmp/openpose_legacy/1/X_train.npy
+./AlphaPose/pretrained_models/halpe136_fast50_dcn_combined_256x192_10handweight.pth
+./AlphaPose/pretrained_models/fast_421_res152_256x192.pth
+./AlphaPose/pretrained_models/noface_fast50_dcn_combined_256x192.pth
+./AlphaPose/detector/yolo/data/yolov3-spp.weights
+
+test/detector/yolo/data/yolov3-spp.weights
+test/pretrained_models/fast_421_res152_256x192.pth
+test/pretrained_models/halpe136_fast50_dcn_combined_256x192_10handweight.pth

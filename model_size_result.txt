@@ -1,0 +1,76 @@
+VAL_SIZE == 0.1
+
+micro:
+---- Split 1 ----
+Accuracy mean: 0.649999988079071
+Accuracy std: 0.0935414325453475
+Balanced Accuracy mean: 0.6514285714285715
+Balanced Accuracy std: 0.0644284130501696
+---- Split 2 ----
+Accuracy mean: 0.6666666746139527
+Accuracy std: 0.052704633952356236
+Balanced Accuracy mean: 0.6714285714285714
+Balanced Accuracy std: 0.040406101782088415
+
+small:
+---- Split 1 ----
+Accuracy mean: 0.6583333253860474
+Accuracy std: 0.08897564763427218
+Balanced Accuracy mean: 0.6699999999999999
+Balanced Accuracy std: 0.06217158613425414
+---- Split 2 ----
+Accuracy mean: 0.6833333492279052
+Accuracy std: 0.05651942062721618
+Balanced Accuracy mean: 0.6599999999999999
+Balanced Accuracy std: 0.06617848469657411
+
+base:
+---- Split 1 ----
+Accuracy mean: 0.725
+Accuracy std: 0.07728014984424336
+Balanced Accuracy mean: 0.7271428571428571
+Balanced Accuracy std: 0.07631834508110331
+---- Split 2 ----
+Accuracy mean: 0.699999988079071
+Accuracy std: 0.040824826613037955
+Balanced Accuracy mean: 0.6657142857142858
+Balanced Accuracy std: 0.06426983930972566
+
+large:
+---- Split 1 ----
+Accuracy mean: 0.7583333373069763
+Accuracy std: 0.05527707025447032
+Balanced Accuracy mean: 0.7385714285714287
+Balanced Accuracy std: 0.06509020428511152
+---- Split 2 ----
+Accuracy mean: 0.7333333373069764
+Accuracy std: 0.06236094157822173
+Balanced Accuracy mean: 0.7171428571428572
+Balanced Accuracy std: 0.09142857142857146
+
+Xlarge:
+---- Split 1 ----
+Accuracy mean: 0.7083333313465119
+Accuracy std: 0.13693063574886866
+Balanced Accuracy mean: 0.7128571428571429
+Balanced Accuracy std: 0.11547594501692125
+---- Split 2 ----
+Accuracy mean: 0.7166666746139526
+Accuracy std: 0.09279608805811178
+Balanced Accuracy mean: 0.6828571428571427
+Balanced Accuracy std: 0.12548680717712998
+
+
+VAL_SIZE == 0.2
+
+large:
+---- Split 1 ----
+Accuracy mean: 0.6875
+Accuracy std: 0.06588078584341867
+Balanced Accuracy mean: 0.6682539682539682
+Balanced Accuracy std: 0.08519340063575209
+---- Split 2 ----
+Accuracy mean: 0.7333333373069764
+Accuracy std: 0.06236094157822173
+Balanced Accuracy mean: 0.7171428571428572
+Balanced Accuracy std: 0.09142857142857146

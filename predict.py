@@ -10,6 +10,13 @@ from typing import Any, Dict, List, Tuple
 import sys
 import json as json
 from tqdm import tqdm
+import time
+
+# sys.path.append('/home/homesecurity/CS281-Robbery-Detection/AlphaPose')
+# sys.path.insert(0,'/home/homesecurity/CS281-Robbery-Detection/AlphaPose')
+
+# sys.path.append(os.path.abspath('AlphaPose'))
+# print(sys.path)
 
 # MACHINE LEARNING LIBRARIES
 import numpy as np
@@ -56,17 +63,38 @@ parser.add_argument('--AcT_CKPT', type=str, required=True,
                     help='AcT weight file name')
 parser.add_argument('--video', dest='video',
                     help='video-name', default="")
-
+parser.add_argument('--detector', dest='detector',
+                    help='detector name', default="yolo")
 parser.add_argument('--qsize', type=int, dest='qsize', default=1024,
                     help='the length of result buffer, where reducing it will lower requirement of cpu memory')
+parser.add_argument('--gpus', type=str, dest='gpus', default="0",
+                    help='choose which cuda device to use by index and input comma to use multi gpus, e.g. 0,1,2,3. (input -1 for cpu only)')
+parser.add_argument('--detbatch', type=int, default=5,
+                    help='detection batch size PER GPU')
+parser.add_argument('--sp', default=False, action='store_true',
+                    help='Use single process for pytorch')
+parser.add_argument('--posebatch', type=int, default=64,
+                    help='pose estimation maximum batch size PER GPU')
+parser.add_argument('--profile', default=False, action='store_true',
+                    help='add speed profiling at screen output')
+parser.add_argument('--save_video', dest='save_video',
+                    help='whether to save rendered video', default=False, action='store_true')
 
 args = parser.parse_args()
+args.posebatch = args.posebatch * len(args.gpus)
+
 
 # Reading AlphaPose Configuration
 AP_cfg = update_config(args.AP_cfg)
+print('------Alphapose Configuration----')
+print(AP_cfg)
+print('--------------------------------')
 
 # Reading AcT Configuration
 AcT_cfg = read_yaml(args.AcT_cfg)
+print('------AcT Configuration----')
+print(AcT_cfg)
+print('--------------------------------')
 model_size = AcT_cfg['MODEL_SIZE']
 n_heads = AcT_cfg[model_size]['N_HEADS']
 n_layers = AcT_cfg[model_size]['N_LAYERS']
@@ -101,12 +129,21 @@ def set_GPU():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
+    # fpr tensorflow (AcT)
     gpus = tf.config.experimental.list_physical_devices('GPU')
     tf.config.experimental.set_visible_devices(gpus[AcT_cfg['GPU']], 'GPU')
     tf.config.experimental.set_memory_growth(gpus[AcT_cfg['GPU']], True)
 
+    # for pytorch (AP)
+    args.gpus = [int(i) for i in args.gpus.split(',')] if torch.cuda.device_count() >= 1 else [-1]
+    args.device = torch.device("cuda:" + str(args.gpus[0]) if args.gpus[0] >= 0 else "cpu")
+
+    return gpus
+
 def load_AP_Detector():
     # Check Input
+    print(len(args.video))
+    print('-------')
     if len(args.video):
         if os.path.isfile(args.video):
             videofile = args.video
@@ -114,6 +151,9 @@ def load_AP_Detector():
             input_source = videofile
         else:
             raise IOError('Error: --video must refer to a video file, not directory.')
+    else:
+        mode = 'none'
+        input_source = 'none'
 
     # TODO: 1. alphapose FileDetectionLoader to read video file and run yolo
     #       2. load alphapose pose model
@@ -121,28 +161,113 @@ def load_AP_Detector():
         # get_detector loads Yolo
         det_loader = DetectionLoader(input_source, get_detector(args), AP_cfg, args, batchSize=args.detbatch, mode=mode, queueSize=args.qsize)
         det_worker = det_loader.start()
+    else:
+        det_loader = DetectionLoader(input_source, get_detector(args), AP_cfg, args, batchSize=args.detbatch, mode=mode, queueSize=args.qsize)
+        det_worker = det_loader.start()
     
     # Load Pose Model
     pose_model = builder.build_sppe(AP_cfg.MODEL, preset_cfg=AP_cfg.DATA_PRESET)
     print('Loading pose model from %s...' % (args.AP_CKPT,))
     pose_model.load_state_dict(torch.load(args.AP_CKPT, map_location=args.device))
-    pose_dataset = builder.retrieve_dataset(AP_cfg.DATASET.TRAIN)
+    # pose_dataset = builder.retrieve_dataset(AP_cfg.DATASET.TRAIN)
     # load pose model to gpu
     pose_model = torch.nn.DataParallel(pose_model, device_ids=args.gpus).to(args.device)
     pose_model.eval()
 
-    data_len = det_loader.length
-    im_names_desc = tqdm(range(data_len), dynamic_ncols=True)
+    return pose_model, det_loader, im_names_desc
 
 # set up GPU
-set_GPU()
+gpus = set_GPU()
 
 # Built Pose Estimation Model From AlphaPose
-load_AP_Detector()
+pose_model, det_loader, im_names_desc = load_AP_Detector()
+data_len = det_loader.length
+im_names_desc = tqdm(range(data_len), dynamic_ncols=True)
+writer = DataWriter(AP_cfg, args, save_video=False, queueSize=args.qsize).start()
+
+runtime_profile = {
+    'dt': [],
+    'pt': [],
+    'pn': []
+}
+
+try:
+    for i in im_names_desc:
+        start_time = getTime()
+        with torch.no_grad():
+            (inps, orig_img, im_name, boxes, scores, ids, cropped_boxes) = det_loader.read()
+            if orig_img is None:
+                break
+            if boxes is None or boxes.nelement() == 0:
+                writer.save(None, None, None, None, None, orig_img, im_name)
+                continue
+            if args.profile:
+                ckpt_time, det_time = getTime(start_time)
+                runtime_profile['dt'].append(det_time)
+            # Pose Estimation
+            inps = inps.to(args.device)
+            datalen = inps.size(0)
+            leftover = 0
+            if (datalen) % args.posebatch:
+                leftover = 1
+            num_batches = datalen // args.posebatch + leftover
+            hm = []
+            for j in range(num_batches):
+                inps_j = inps[j * args.posebatch:min((j + 1) * args.posebatch, datalen)]
+                hm_j = pose_model(inps_j)
+                hm.append(hm_j)
+            hm = torch.cat(hm)
+            if args.profile:
+                ckpt_time, pose_time = getTime(ckpt_time)
+                runtime_profile['pt'].append(pose_time)
+            if args.profile:
+                ckpt_time, pose_time = getTime(ckpt_time)
+            hm = hm.cpu()
+            writer.save(boxes, scores, ids, hm, cropped_boxes, orig_img, im_name)
+            if args.profile:
+                ckpt_time, post_time = getTime(ckpt_time)
+            if args.profile:
+                ckpt_time, post_time = getTime(ckpt_time)
+                runtime_profile['pn'].append(post_time)
+
+        if args.profile:
+            # TQDM
+            im_names_desc.set_description(
+                'det time: {dt:.4f} | pose time: {pt:.4f} | post processing: {pn:.4f}'.format(
+                    dt=np.mean(runtime_profile['dt']), pt=np.mean(runtime_profile['pt']), pn=np.mean(runtime_profile['pn']))
+            )
+    print('===========================> Finish Model Running.')
+    while(writer.running()):
+        time.sleep(1)
+        print('===========================> Rendering remaining ' + str(writer.count()) + ' images in the queue...', end='\r')
+    writer.stop()
+    det_loader.stop()
+
+except Exception as e:
+    print(repr(e))
+    print('An error as above occurs when processing the images, please check it')
+    pass
+except KeyboardInterrupt:
+    print('===========================> Finish Model Running.')
+    # Thread won't be killed when press Ctrl+C
+    if args.sp:
+        det_loader.terminate()
+        while(writer.running()):
+            time.sleep(1)
+            print('===========================> Rendering remaining ' + str(writer.count()) + ' images in the queue...', end='\r')
+        writer.stop()
+    else:
+        # subprocesses are killed, manually clear queues
+
+        det_loader.terminate()
+        writer.terminate()
+        writer.clear_queues()
+        det_loader.clear_queues()
 
 # Built AcT
-AcT_model = build_act()
-AcT_model.load_weights(args.AcT_CKPT)
+# AcT_model = build_act()
+# AcT_model.load_weights(args.AcT_CKPT)
+
 
 
 # print("---Model Summary-----")

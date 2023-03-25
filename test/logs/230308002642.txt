@@ -1,0 +1,111 @@
+----- Start Split 1 ----
+
+- Fold 1
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 2
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 3
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 4
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 5
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 6
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 7
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 8
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 9
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 10
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+---- Split 1 ----
+Accuracy mean: 1.0
+Accuracy std: 0.0
+Balanced Accuracy mean: 1.0
+Balanced Accuracy std: 0.0
+----- Start Split 2 ----
+
+- Fold 1
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 2
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 3
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 4
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 5
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 6
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 7
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 8
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 9
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 10
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+---- Split 2 ----
+Accuracy mean: 1.0
+Accuracy std: 0.0
+Balanced Accuracy mean: 1.0
+Balanced Accuracy std: 0.0
+----- Start Split 3 ----
+
+- Fold 1
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 2
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 3
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 4
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 5
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 6
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 7
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 8
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 9
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+- Fold 10
+Accuracy Test: 1.0 <> Balanced Accuracy: 1.0
+
+---- Split 3 ----
+Accuracy mean: 1.0
+Accuracy std: 0.0
+Balanced Accuracy mean: 1.0
+Balanced Accuracy std: 0.0

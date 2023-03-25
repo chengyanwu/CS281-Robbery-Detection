@@ -1,0 +1,15 @@
+----- Start Split 1 ----
+
+- Fold 1
+Accuracy Test: 0.5208333134651184 <> Balanced Accuracy: 0.46296296296296297
+
+- Fold 2
+Accuracy Test: 0.6041666865348816 <> Balanced Accuracy: 0.5634920634920635
+
+- Fold 3
+Accuracy Test: 0.5833333134651184 <> Balanced Accuracy: 0.5343915343915344
+
+- Fold 4
+Accuracy Test: 0.6666666865348816 <> Balanced Accuracy: 0.6931216931216931
+
+- Fold 5
